@@ -138,7 +138,7 @@ def start():
 
     is_dorm_available = check_avail(my_booking_data=booking_data, website_booking_data=website_booking_data)
 
-    if is_dorm_available:
+    if not is_dorm_available:
         print("Booking available! Here is the summary")
         print(json.dumps(website_booking_data, indent=2))
 
