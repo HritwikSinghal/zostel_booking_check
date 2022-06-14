@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import os
 
 import requests
 import yagmail
@@ -93,6 +94,18 @@ def get_creds(creds_path: str, mail_data: dict):
 
 
 def start():
+
+    """
+    DISPLAY=":0"
+    XAUTHORITY="/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
+    XDG_RUNTIME_DIR="/run/user/1000"
+    DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+    """
+    os.environ["DISPLAY"] = ":0"
+    os.environ["XAUTHORITY"] = "/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
+    os.environ["XDG_RUNTIME_DIR"] = "/run/user/1000"
+    os.environ["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/run/user/1000/bus"
+
     mail_data = {
         'from': "",
         'from_pass': "",
