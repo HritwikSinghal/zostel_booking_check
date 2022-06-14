@@ -84,8 +84,8 @@ def send_mail(mail_data: dict) -> None:
     send_notifications(subject, body)
 
 
-def get_creds(mail_data):
-    with open('creds') as creds:
+def get_creds(creds_path: str, mail_data: dict):
+    with open(creds_path) as creds:
         basics = json.load(creds)
         mail_data['from'] = basics['from']
         mail_data['to'] = basics['from']
@@ -102,7 +102,8 @@ def start():
         "filename": "document.pdf"
     }
 
-    get_creds(mail_data)
+    creds_path = '/home/hritwik/Projects/zostel_booking/creds'
+    get_creds(creds_path, mail_data)
 
     booking_data = {
         'checkin': '2022-06-25',
