@@ -67,3 +67,11 @@ chmod +x main.py
 ```cron
 */1 * * * * <path_to_directory>/zostel_booking/main.py
 ```
+
+---
+
+## License
+
+[GPLv3](/LICENSE)
+
+---
