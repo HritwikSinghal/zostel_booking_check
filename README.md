@@ -9,7 +9,8 @@ notifications (for GNOME users only) even when booking is not available.
   thus will only show in notification center and wont popup on screen.
   However, when the booking is available, it will show highest priority notifications for it.
 - Just fill all the files inside "data" directory and run.
-- There is an example creds_data file. Just fill it with your details and remove ".example".
+- There is an example '_creds_data.example_' file available. Just fill it with your details and remove ".example" to
+  create file containing credentials.
 - **ONLY IF** you want GNOME desktop notifications, You need to get the values of variables
   inside '_env_var_data_' file from your local linux system. Otherwise, leave that file as is.
 
