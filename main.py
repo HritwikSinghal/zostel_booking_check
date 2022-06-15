@@ -93,8 +93,7 @@ def get_creds(creds_path: str, mail_data: dict):
         mail_data['from_pass'] = basics['from_pass']
 
 
-def start():
-
+def set_env():
     """
     DISPLAY=":0"
     XAUTHORITY="/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
@@ -105,6 +104,10 @@ def start():
     os.environ["XAUTHORITY"] = "/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
     os.environ["XDG_RUNTIME_DIR"] = "/run/user/1000"
     os.environ["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/run/user/1000/bus"
+
+
+def start():
+    set_env()
 
     mail_data = {
         'from': "",
@@ -177,7 +180,7 @@ def start():
     else:
         print(f"Sorry not available for {booking_data['checkin']}. Here is the summary")
         print(json.dumps(website_booking_data['availability'], indent=2))
-        send_notifications("Sorry!", "No booking")
+        # send_notifications("Sorry!", "No booking")
 
 
 # Press the green button in the gutter to run the script.
