@@ -10,16 +10,40 @@ import gi
 gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 
+script_path = os.path.dirname(__file__)
+os.environ["script_path"] = script_path
 
-def get_data(url: str, headers: dict, params: dict) -> str:
+
+def get_data_from_file(file_path: str) -> dict:
+    with open(file_path) as my_file:
+        return json.load(my_file)
+
+
+def set_env_var() -> None:
+    """
+    DISPLAY=":0"
+    XAUTHORITY="/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
+    XDG_RUNTIME_DIR="/run/user/1000"
+    DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+    """
+
+    env_var_data: dict = get_data_from_file(env_var_data_path)
+
+    os.environ["DISPLAY"] = env_var_data['DISPLAY']
+    os.environ["XAUTHORITY"] = env_var_data['XAUTHORITY']
+    os.environ["XDG_RUNTIME_DIR"] = env_var_data['XDG_RUNTIME_DIR']
+    os.environ["DBUS_SESSION_BUS_ADDRESS"] = env_var_data['DBUS_SESSION_BUS_ADDRESS']
+
+
+def get_web_data(url: str, headers: dict, params: dict) -> str:
     """
     73 - 2 bed dorm
-    74 - shared bath
+    74 - shared bath mixed dorm
     75 - female dorm
-    406 - Mixed dorm ensuite
+    406 - Mixed dorm en-suite
 
 
-    curl 'https://api.zostel.com/api/v1/stay/availability/?checkin=2022-06-25&checkout=2022-07-02&property_code=MNLH056&room_ids=406' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Client-App-Id: FrccUQb4' -H 'Client-User-Id: 72b' -H 'Authorization: Bearer Rz6QmuSsdTPi5XfNCPsCJRVMFey0UzrOcRj5tg4bduc' -H 'Origin: https://www.zostel.com' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: https://www.zostel.com/' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-site' -H 'TE: trailers'
+    curl 'https://api.zostel.com/api/v1/stay/availability/?checkin=2022-06-25&checkout=2022-07-02&property_code=MNLH056&room_ids=406' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Client-App-Id: Something' -H 'Client-User-Id: Something' -H 'Authorization: Bearer Something' -H 'Origin: https://www.zostel.com' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: https://www.zostel.com/'
 
     await fetch("https://api.zostel.com/api/v1/stay/availability/?checkin=2022-06-25&checkout=2022-07-02&property_code=MNLH056&room_ids=406", {
         "credentials": "include",
@@ -27,9 +51,9 @@ def get_data(url: str, headers: dict, params: dict) -> str:
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0",
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.5",
-            "Client-App-Id": "FrcIUQb4",
-            "Client-User-Id": "72dcfb",
-            "Authorization": "Bearer z6QmuSsdTPi5XfNCPsCJRVMFey0UzrOcRj5tg4bduc",
+            "Client-App-Id": "Something",
+            "Client-User-Id": "Something",
+            "Authorization": "Bearer Something",
         },
         "method": "GET",
         "mode": "cors"
@@ -40,16 +64,16 @@ def get_data(url: str, headers: dict, params: dict) -> str:
     return requests.get(url, headers=headers, params=params).text
 
 
-def check_avail(my_booking_data: dict, website_booking_data: dict) -> bool:
+def check_availability(my_booking_data: dict, website_booking_data: dict) -> bool:
     checkin: str = my_booking_data['checkin']
     room_id: str = my_booking_data['roomid']
 
-    availibility = website_booking_data['availability'][0]
-    if availibility['date'] == checkin \
-            and availibility['units'] > 0 \
-            and str(availibility['room_id'] == room_id) \
-            and str(availibility['bookable'] == 'true'):
-        print(f"The Date,{availibility}, is available!")
+    availability = website_booking_data['availability'][0]
+    if availability['date'] == checkin \
+            and availability['units'] > 0 \
+            and str(availability['room_id'] == room_id) \
+            and str(availability['bookable'] == 'true'):
+        print(f"The Date,{availability}, is available!")
         return True
     return False
 
@@ -85,62 +109,18 @@ def send_mail(mail_data: dict) -> None:
     )
 
 
-def get_creds(creds_path: str, mail_data: dict):
-    with open(creds_path) as creds:
-        basics = json.load(creds)
-        mail_data['from'] = basics['from']
-        mail_data['to'] = basics['from']
-        mail_data['from_pass'] = basics['from_pass']
+def get_data() -> tuple[dict, dict, dict]:
+    mail_data: dict = get_data_from_file(mail_data_path)
+    creds_data: dict = get_data_from_file(creds_path)
+    booking_data: dict = get_data_from_file(booking_data_path)
 
+    mail_data['from'] = creds_data['from']
+    mail_data['to'] = creds_data['to']
+    mail_data['from_pass'] = creds_data['from_pass']
 
-def set_env():
-    """
-    DISPLAY=":0"
-    XAUTHORITY="/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
-    XDG_RUNTIME_DIR="/run/user/1000"
-    DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-    """
-    os.environ["DISPLAY"] = ":0"
-    os.environ["XAUTHORITY"] = "/run/user/1000/.mutter-Xwaylandauth.LIHWN1"
-    os.environ["XDG_RUNTIME_DIR"] = "/run/user/1000"
-    os.environ["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/run/user/1000/bus"
-
-
-def start():
-    set_env()
-
-    mail_data = {
-        'from': "",
-        'from_pass': "",
-        'to': "",
-        'subject': 'This is test subject',
-        'body': "Hello there",
-        "filename": "document.pdf"
-    }
-
-    creds_path = '/home/hritwik/Projects/zostel_booking/creds'
-    get_creds(creds_path, mail_data)
-
-    booking_data = {
-        'checkin': '2022-06-25',
-        'checkout': '2022-06-26',
-        'roomid': '406',
-        'propertycode': 'MNLH056'
-    }
-
-    url = f'https://api.zostel.com/api/v1/stay/availability/'
-    client_App_Id = 'FrcIH2m03QxVgFD037u8oaQczaAImvAN506cUQb4'
-    client_User_Id = '72d6d30cfb'
-    authorization = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IkFOLTI2ODI3OTciLCJhcHBfaWQiOiJGcmNJSDJtMDNReFZnRkQwMzd1OG9hUWN6YUFJbXZBTjUwNmNVUWI0IiwidXNlcl9pZCI6IjcyZDZkMzBjZmIiLCJhdXRoZW50aWNhdGVkIjpmYWxzZSwiaWF0IjoxNjU1MTkxMjgxfQ.Rz6QmuSsdTPi5XfNCPsCJRVMFey0UzrOcRj5tg4bduc'
-
-    headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0",
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Client-App-Id": client_App_Id,
-        "Client-User-Id": client_User_Id,
-        "Authorization": authorization,
-    }
+    headers["Client-App-Id"] = creds_data['client_App_Id']
+    headers["Client-User-Id"] = creds_data['client_User_Id']
+    headers["Authorization"] = creds_data['authorization']
 
     params = {
         "checkin": booking_data['checkin'],
@@ -149,10 +129,16 @@ def start():
         "property_code": booking_data['propertycode'],
     }
 
-    data = get_data(url, headers, params)
+    return mail_data, booking_data, params
+
+
+def start():
+    mail_data, booking_data, params = get_data()
+
+    data = get_web_data(api_url, headers, params)
     website_booking_data = json.loads(data)  # dictionary
 
-    is_dorm_available = check_avail(my_booking_data=booking_data, website_booking_data=website_booking_data)
+    is_dorm_available = check_availability(my_booking_data=booking_data, website_booking_data=website_booking_data)
 
     if is_dorm_available:
         print("Booking available! Here is the summary")
@@ -186,4 +172,18 @@ def start():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    env_var_data_path = f'{script_path}/data/env_var_data'
+    set_env_var()
+
+    mail_data_path = f'{script_path}/data/mail_data'
+    creds_path = f'{script_path}/data/creds_data'
+    booking_data_path = f'{script_path}/data/booking_data'
+
+    api_url = 'https://api.zostel.com/api/v1/stay/availability/'
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.5",
+    }
+
     start()

@@ -1,5 +1,5 @@
 {
-"subject": "This is test subject",
-"body": "Hello there",
-"filename": "document.pdf"
+"subject": "The subject of mail You want when dates are available",
+"body": "same for body",
+"attachment": "give_full_path_to_attachment_if_needed_otherwise_leave"
 }

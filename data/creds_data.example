@@ -1,0 +1,8 @@
+{
+"from": "from@outlook.com",
+"to": "to@example.com",
+"from_pass": "TheSuperSecretPassword_of_my_FROM_account",
+"client_App_Id" : "THe_client_app_id",
+"client_User_Id" : "the_user_id",
+"authorization" : "The_authorization"
+}
