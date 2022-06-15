@@ -54,9 +54,11 @@ def check_avail(my_booking_data: dict, website_booking_data: dict) -> bool:
     return False
 
 
-def send_notifications(subject: str, text: str):
+def send_notifications(subject: str, text: str, urgency: int):
     Notify.init(subject)
     Hello = Notify.Notification.new(subject, text)
+
+    Hello.set_urgency(urgency)
     Hello.show()
 
 
@@ -81,8 +83,6 @@ def send_mail(mail_data: dict) -> None:
         contents=body,
         # attachments=filename
     )
-
-    send_notifications(subject, body)
 
 
 def get_creds(creds_path: str, mail_data: dict):
@@ -158,7 +158,7 @@ def start():
         print("Booking available! Here is the summary")
         print(json.dumps(website_booking_data, indent=2))
 
-        print("sending mail...")
+        print("Sending Mail...")
         availability = website_booking_data['availability'][0]
         pricing = website_booking_data['pricing'][0]
 
@@ -175,12 +175,13 @@ def start():
                              + "If you want more info, here is the summary\n" \
                              + json.dumps(website_booking_data, indent=2)
         send_mail(mail_data)
-        print("mail sent!")
+        print("Mail sent!")
+        send_notifications(mail_data['subject'], mail_data['body'], urgency=2)
 
     else:
         print(f"Sorry not available for {booking_data['checkin']}. Here is the summary")
         print(json.dumps(website_booking_data['availability'], indent=2))
-        # send_notifications("Sorry!", "No booking")
+        send_notifications("Sorry!", "No booking", urgency=1)
 
 
 # Press the green button in the gutter to run the script.
