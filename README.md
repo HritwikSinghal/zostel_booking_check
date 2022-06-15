@@ -17,9 +17,9 @@ notifications (for GNOME users only) even when booking is not available.
 
 ### Screenshots
 
-| Booking Available               | Booking Not Available                           |
-|---------------------------------|-------------------------------------------------|
-| ![Popup Notification](images/), | ![In Notification Panel](images/no_booking.png) |
+| Booking Available                                                                                                | Booking Not Available                                            |
+|------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| The Popup Notification <br>![Popup Notification](images/booking.png) <br> <br> The Mail ![Mail](images/mail.png) | The Notification ![In Notification Panel](images/no_booking.png) |
 
 --- 
 
