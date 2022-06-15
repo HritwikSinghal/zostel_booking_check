@@ -181,7 +181,7 @@ def start():
     else:
         print(f"Sorry not available for {booking_data['checkin']}. Here is the summary")
         print(json.dumps(website_booking_data['availability'], indent=2))
-        send_notifications("Sorry!", "No booking", urgency=1)
+        send_notifications("Sorry!", "No booking", urgency=0)
 
 
 # Press the green button in the gutter to run the script.
