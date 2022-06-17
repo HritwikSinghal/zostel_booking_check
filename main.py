@@ -160,14 +160,15 @@ def start():
         mail_data['body'] += "\n\n---------------------------------------------------------------\n\n" \
                              + "If you want more info, here is the summary\n" \
                              + json.dumps(website_booking_data, indent=2)
+
+        send_notifications(mail_data['subject'], mail_data['body'], urgency=2)
         send_mail(mail_data)
         print("Mail sent!")
-        send_notifications(mail_data['subject'], mail_data['body'], urgency=2)
 
     else:
         print(f"Sorry not available for {booking_data['checkin']}. Here is the summary")
         print(json.dumps(website_booking_data['availability'], indent=2))
-        send_notifications("Sorry!", "No booking", urgency=0)
+        # send_notifications("Sorry!", "No booking", urgency=0)
 
 
 # Press the green button in the gutter to run the script.
